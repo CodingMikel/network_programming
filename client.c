@@ -8,7 +8,7 @@
 #define PORT 5000
 #define PASS_LENGTH 20
 
-int trainsys(int sock);
+int airplanesys(int sock);
 int menu2(int sock, int type);
 int do_admin_action(int sock, int action);
 int do_action(int sock, int opt);
@@ -42,15 +42,15 @@ int main(int argc, char * argv[]){
 	}
 	printf("connection established\n");
 	
-	while(trainsys(cli_fd)!=3); // return 3 <=> exit in trainsys menu 
+	while(airplanesys(cli_fd)!=3); // return 3 <=> exit in airplanesys menu 
 	close(cli_fd); // close socket
 	return 0;
 }
 
-int trainsys(int sock){ //param is a socket
+int airplanesys(int sock){ //param is a socket
 	int opt; 
 	system("clear");
-	printf("\t\t\t******WELCOME TO TRAIN BOOKING SYSTEM******\n");
+	printf("\t\t******WELCOME TO AIRPLANE BOOKING SYSTEM******\n");
 	printf("Choose One Of The Three Option\n");
 	printf("1. LogIn\n");
 	printf("2. Register\n");
@@ -138,9 +138,9 @@ int menu2(int sock, int type){
 	else{
 		system("clear");
 		printf("++++ OPTIONS ++++\n");
-		printf("1. Add Train\n");
-		printf("2. Delete Train\n");
-		printf("3. Modify Train\n");
+		printf("1. Add Airplane\n");
+		printf("2. Delete Airplane\n");
+		printf("3. Modify Airplane\n");
 		printf("4. Add Root User\n");
 		printf("5. Delete User\n");
 		printf("6. Logout\n");
@@ -156,23 +156,23 @@ int do_admin_action(int sock, int opt){
 			int tno;
 			char tname[20];
 			write(sock, &opt, sizeof(opt));
-			printf("Enter Train Name: ");scanf("%s", tname);
-			printf("Enter Train No. : ");scanf("%d", &tno);
+			printf("Enter Airplane Name: ");scanf("%s", tname);
+			printf("Enter Airplane No. : ");scanf("%d", &tno);
 			write(sock, &tname, sizeof(tname));
 			write(sock, &tno, sizeof(tno));
 			read(sock, &opt, sizeof(opt));
-			if(opt == 1 ) printf("Train Added Successfully.\n");
+			if(opt == 1 ) printf("Airplane Added Successfully.\n");
 			while(getchar()!='\n');
 			getchar();
 			return opt;
 			break;
 		}
 		case 2:{
-			int no_of_trains;
+			int no_of_airplanes;
 			write(sock, &opt, sizeof(opt));
-			read(sock, &no_of_trains, sizeof(int));
-			//printf("no of train:%d",no_of_trains);
-			while(no_of_trains>0){
+			read(sock, &no_of_airplanes, sizeof(int));
+			//printf("no of airplane:%d",no_of_airplanes);
+			while(no_of_airplanes>0){
 				int tid, tno;
 				char tname[20];
 				read(sock, &tid, sizeof(tid));
@@ -180,13 +180,13 @@ int do_admin_action(int sock, int opt){
 				read(sock, &tno, sizeof(tno));
 				if(strcmp(tname, "deleted")!=0)
 					printf("%d.\t%d\t%s\n", tid, tno, tname);
-				no_of_trains--;
+				no_of_airplanes--;
 			}
-			printf("Enter -2 to cancel.\nEnter the train ID to delete: "); scanf("%d", &no_of_trains);
-			//printf("no of train:%d",no_of_trains);
-			write(sock, &no_of_trains, sizeof(int));
+			printf("Enter -2 to cancel.\nEnter the airplane ID to delete: "); scanf("%d", &no_of_airplanes);
+			//printf("no of airplane:%d",no_of_airplanes);
+			write(sock, &no_of_airplanes, sizeof(int));
 			read(sock, &opt, sizeof(opt));
-			if(opt != -2) printf("Train deleted successfully\n");
+			if(opt != -2) printf("Airplane deleted successfully\n");
 			else printf("Operation cancelled!");
 			while(getchar()!='\n');
 			getchar();
@@ -194,10 +194,10 @@ int do_admin_action(int sock, int opt){
 			break;
 		}
 		case 3:{
-			int no_of_trains;
+			int no_of_airplanes;
 			write(sock, &opt, sizeof(opt));
-			read(sock, &no_of_trains, sizeof(int));
-			while(no_of_trains>0){
+			read(sock, &no_of_airplanes, sizeof(int));
+			while(no_of_airplanes>0){
 				int tid, tno;
 				char tname[20];
 				read(sock, &tid, sizeof(tid));
@@ -205,18 +205,18 @@ int do_admin_action(int sock, int opt){
 				read(sock, &tno, sizeof(tno));
 				if(!strcmp(tname, "deleted"));else
 				printf("%d.\t%d\t%s\n", tid+1, tno, tname);
-				no_of_trains--;
+				no_of_airplanes--;
 			}
-			printf("Enter 0 to cancel.\nEnter the train ID to modify: "); scanf("%d", &no_of_trains);
-			write(sock, &no_of_trains, sizeof(int));
-			printf("What parameter do you want to modify?\n1. Train Name\n2. Train No.\n3. Available Seats\n");
-			printf("Your Choice: ");scanf("%d", &no_of_trains);
-			write(sock, &no_of_trains, sizeof(int));
-			if(no_of_trains == 2 || no_of_trains == 3){
-				read(sock, &no_of_trains, sizeof(int));
-				printf("Current Value: %d\n", no_of_trains);				
-				printf("Enter Value: ");scanf("%d", &no_of_trains);
-				write(sock, &no_of_trains, sizeof(int));
+			printf("Enter 0 to cancel.\nEnter the airplane ID to modify: "); scanf("%d", &no_of_airplanes);
+			write(sock, &no_of_airplanes, sizeof(int));
+			printf("What parameter do you want to modify?\n1. Airplane Name\n2. Airplane No.\n3. Available Seats\n");
+			printf("Your Choice: ");scanf("%d", &no_of_airplanes);
+			write(sock, &no_of_airplanes, sizeof(int));
+			if(no_of_airplanes == 2 || no_of_airplanes == 3){
+				read(sock, &no_of_airplanes, sizeof(int));
+				printf("Current Value: %d\n", no_of_airplanes);				
+				printf("Enter Value: ");scanf("%d", &no_of_airplanes);
+				write(sock, &no_of_airplanes, sizeof(int));
 			}
 			else{
 				char name[20];
@@ -226,7 +226,7 @@ int do_admin_action(int sock, int opt){
 				write(sock, &name, sizeof(name));
 			}
 			read(sock, &opt, sizeof(opt));
-			if(opt == 3) printf("Train Data Modified Successfully\n");
+			if(opt == 3) printf("Airplane Data Modified Successfully\n");
 			while(getchar()!='\n');
 			getchar();
 			return opt;
@@ -288,24 +288,24 @@ int do_action(int sock, int opt){
 	switch(opt){
 		case 1:{
 	
-			int trains, trainid, trainavseats, trainno, required_seats;
-			char trainname[20];
+			int airplanes, airplaneid, airplaneavseats, airplaneno, required_seats;
+			char airplanename[20];
 			write(sock, &opt, sizeof(opt));
-			read(sock, &trains, sizeof(trains));
-			printf("ID\tT_NO\tAV_SEAT\tTRAIN NAME\n");
-			while(trains--){
-				read(sock, &trainid, sizeof(trainid));
-				read(sock, &trainno, sizeof(trainno));
-				read(sock, &trainavseats, sizeof(trainavseats));
-				read(sock, &trainname, sizeof(trainname));
-				if(strcmp(trainname, "deleted")!=0)
-				printf("%d\t%d\t%d\t%s\n", trainid, trainno, trainavseats, trainname);
+			read(sock, &airplanes, sizeof(airplanes));
+			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\n");
+			while(airplanes--){
+				read(sock, &airplaneid, sizeof(airplaneid));
+				read(sock, &airplaneno, sizeof(airplaneno));
+				read(sock, &airplaneavseats, sizeof(airplaneavseats));
+				read(sock, &airplanename, sizeof(airplanename));
+				if(strcmp(airplanename, "deleted")!=0)
+				printf("%d\t%d\t%d\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename);
 			}
-			printf("Enter the train ID: "); scanf("%d", &trainid);
-			write(sock, &trainid, sizeof(trainid));
-			read(sock, &trainavseats, sizeof(trainavseats));
+			printf("Enter the airplane ID: "); scanf("%d", &airplaneid);
+			write(sock, &airplaneid, sizeof(airplaneid));
+			read(sock, &airplaneavseats, sizeof(airplaneavseats));
 			printf("Enter the number of seats: "); scanf("%d", &required_seats);
-			if(trainavseats>=required_seats && required_seats>0)
+			if(airplaneavseats>=required_seats && required_seats>0)
 				write(sock, &required_seats, sizeof(required_seats));
 			else{
 				required_seats = -1;
@@ -388,14 +388,14 @@ void view_booking(int sock){
 	while(!getchar());
 	while(entries--){
 		int bid, bks_seat, bke_seat, cancelled;
-		char trainname[20];
+		char airplanename[20];
 		read(sock,&bid, sizeof(bid));
-		read(sock,&trainname, sizeof(trainname));
+		read(sock,&airplanename, sizeof(airplanename));
 		read(sock,&bks_seat, sizeof(int));
 		read(sock,&bke_seat, sizeof(int));
 		read(sock,&cancelled, sizeof(int));
 		if(!cancelled)
-		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tTRAIN :%s\n", bid, bks_seat, bke_seat, trainname);
+		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tAIRPLANE :%s\n", bid, bks_seat, bke_seat, airplanename);
 	}
 	printf("Press any key to continue...\n");
 	while(getchar()!='\n');

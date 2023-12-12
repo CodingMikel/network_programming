@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h> 
 #define PORT 5000
-#define TRAIN "./db/train"
+#define AIRPLANE "./db/airplane"
 #define BOOKING "./db/booking"
 #define PASS_LENGTH 30
 struct account{
@@ -21,10 +21,10 @@ struct account{
 	char pass[PASS_LENGTH];
 };
 
-struct train{
+struct airplane{
 	int tid;
-	char train_name[20];
-	int train_no;
+	char airplane_name[20];
+	int airplane_no;
 	int av_seats;
 	int last_seatno_used;
 };
@@ -34,7 +34,7 @@ struct bookings{
 	int type;
 	int acc_no;
 	int tr_id;
-	char trainname[20];
+	char airplanename[20];
 	int seat_start;
 	int seat_end;
 	int cancelled;
@@ -283,21 +283,21 @@ int menu2(int sock, int id){
 	int op_id;
 	read(sock, &op_id, sizeof(op_id));
 	if(op_id == 1){
-		//add a train
+		//add a airplane
 		int tid = 0;
 		int tno; 
 		char tname[20];
 		read(sock, &tname, sizeof(tname));
 		read(sock, &tno, sizeof(tno));
-		struct train temp, temp2;
+		struct airplane temp, temp2;
 
 		temp.tid = tid;
-		temp.train_no = tno;
-		strcpy(temp.train_name, tname);
+		temp.airplane_no = tno;
+		strcpy(temp.airplane_name, tname);
 		temp.av_seats = 15;
 		temp.last_seatno_used = 0;
 
-		int fd = open(TRAIN, O_RDWR);
+		int fd = open(AIRPLANE, O_RDWR);
 		struct flock lock;
 		lock.l_type = F_WRLCK;
 		lock.l_start = 0;
@@ -316,7 +316,7 @@ int menu2(int sock, int id){
 			write(sock, &op_id, sizeof(op_id));
 		}
 		else{
-			lseek(fd, -1 * sizeof(struct train), SEEK_CUR);
+			lseek(fd, -1 * sizeof(struct airplane), SEEK_CUR);
 			read(fd, &temp2, sizeof(temp2));
 			temp.tid = temp2.tid + 1;
 			write(fd, &temp, sizeof(temp));
@@ -328,7 +328,7 @@ int menu2(int sock, int id){
 		return op_id;
 	}
 	if(op_id == 2){
-		int fd = open(TRAIN, O_RDWR);
+		int fd = open(AIRPLANE, O_RDWR);
 
 		struct flock lock;
 		lock.l_type = F_WRLCK;
@@ -340,39 +340,39 @@ int menu2(int sock, int id){
 		fcntl(fd, F_SETLKW, &lock);
 
 		int fp = lseek(fd, 0, SEEK_END);
-		int no_of_trains = fp / sizeof(struct train);
-		printf("no of train:%d\n",no_of_trains);
-		write(sock, &no_of_trains, sizeof(int));
+		int no_of_airplanes = fp / sizeof(struct airplane);
+		printf("no of airplane:%d\n",no_of_airplanes);
+		write(sock, &no_of_airplanes, sizeof(int));
 		lseek(fd, 0, SEEK_SET);
-		struct train temp;
+		struct airplane temp;
 		while(fp != lseek(fd, 0, SEEK_CUR)){
 			printf("FP :%d  FD :%ld\n",fp,lseek(fd, 0, SEEK_CUR));
-			read(fd, &temp, sizeof(struct train));
+			read(fd, &temp, sizeof(struct airplane));
 			write(sock, &temp.tid, sizeof(int));
-			write(sock, &temp.train_name, sizeof(temp.train_name));
-			write(sock, &temp.train_no, sizeof(int));			
+			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
+			write(sock, &temp.airplane_no, sizeof(int));			
 		}
-		//int train_id=-1;
-		read(sock, &no_of_trains, sizeof(int));
-		if(no_of_trains != -2) //write(sock, &no_of_trains, sizeof(int));
+		//int airplane_id=-1;
+		read(sock, &no_of_airplanes, sizeof(int));
+		if(no_of_airplanes != -2) //write(sock, &no_of_airplanes, sizeof(int));
 		{
-			struct train temp;
+			struct airplane temp;
 			//lseek(fd, 0, SEEK_SET);
-			lseek(fd, (no_of_trains)*sizeof(struct train), SEEK_SET);
-			read(fd, &temp, sizeof(struct train));			
-			printf("%s is deleted\n", temp.train_name);
-			strcpy(temp.train_name,"deleted");
-			lseek(fd, -1*sizeof(struct train), SEEK_CUR);
-			write(fd, &temp, sizeof(struct train));
-			//write(sock, &no_of_trains, sizeof(int));
+			lseek(fd, (no_of_airplanes)*sizeof(struct airplane), SEEK_SET);
+			read(fd, &temp, sizeof(struct airplane));			
+			printf("%s is deleted\n", temp.airplane_name);
+			strcpy(temp.airplane_name,"deleted");
+			lseek(fd, -1*sizeof(struct airplane), SEEK_CUR);
+			write(fd, &temp, sizeof(struct airplane));
+			//write(sock, &no_of_airplanes, sizeof(int));
 		}
-		write(sock, &no_of_trains, sizeof(int));
+		write(sock, &no_of_airplanes, sizeof(int));
 		lock.l_type = F_UNLCK;
 		fcntl(fd, F_SETLK, &lock);
 		close(fd);
 	}
 	if(op_id == 3){
-		int fd = open(TRAIN, O_RDWR);
+		int fd = open(AIRPLANE, O_RDWR);
 
 		struct flock lock;
 		lock.l_type = F_WRLCK;
@@ -384,44 +384,44 @@ int menu2(int sock, int id){
 		fcntl(fd, F_SETLKW, &lock);
 
 		int fp = lseek(fd, 0, SEEK_END);
-		int no_of_trains = fp / sizeof(struct train);
-		write(sock, &no_of_trains, sizeof(int));
+		int no_of_airplanes = fp / sizeof(struct airplane);
+		write(sock, &no_of_airplanes, sizeof(int));
 		lseek(fd, 0, SEEK_SET);
 		while(fp != lseek(fd, 0, SEEK_CUR)){
-			struct train temp;
-			read(fd, &temp, sizeof(struct train));
+			struct airplane temp;
+			read(fd, &temp, sizeof(struct airplane));
 			write(sock, &temp.tid, sizeof(int));
-			write(sock, &temp.train_name, sizeof(temp.train_name));
-			write(sock, &temp.train_no, sizeof(int));			
+			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
+			write(sock, &temp.airplane_no, sizeof(int));			
 		}
-		read(sock, &no_of_trains, sizeof(int));
+		read(sock, &no_of_airplanes, sizeof(int));
 
-		struct train temp;
+		struct airplane temp;
 		lseek(fd, 0, SEEK_SET);
-		lseek(fd, (no_of_trains-1)*sizeof(struct train), SEEK_CUR);
-		read(fd, &temp, sizeof(struct train));			
+		lseek(fd, (no_of_airplanes-1)*sizeof(struct airplane), SEEK_CUR);
+		read(fd, &temp, sizeof(struct airplane));			
 
-		read(sock, &no_of_trains,sizeof(int));
-		if(no_of_trains == 1){
+		read(sock, &no_of_airplanes,sizeof(int));
+		if(no_of_airplanes == 1){
 			char name[20];
-			write(sock, &temp.train_name, sizeof(temp.train_name));
+			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
 			read(sock, &name, sizeof(name));
-			strcpy(temp.train_name, name);
+			strcpy(temp.airplane_name, name);
 		}
-		else if(no_of_trains == 2){
-			write(sock, &temp.train_no, sizeof(temp.train_no));
-			read(sock, &temp.train_no, sizeof(temp.train_no));
+		else if(no_of_airplanes == 2){
+			write(sock, &temp.airplane_no, sizeof(temp.airplane_no));
+			read(sock, &temp.airplane_no, sizeof(temp.airplane_no));
 		}
 		else{
 			write(sock, &temp.av_seats, sizeof(temp.av_seats));
 			read(sock, &temp.av_seats, sizeof(temp.av_seats));
 		}
 
-		no_of_trains = 3;
-		printf("%s\t%d\t%d\n", temp.train_name, temp.train_no, temp.av_seats);
-		lseek(fd, -1*sizeof(struct train), SEEK_CUR);
-		write(fd, &temp, sizeof(struct train));
-		write(sock, &no_of_trains, sizeof(int));
+		no_of_airplanes = 3;
+		printf("%s\t%d\t%d\n", temp.airplane_name, temp.airplane_no, temp.av_seats);
+		lseek(fd, -1*sizeof(struct airplane), SEEK_CUR);
+		write(fd, &temp, sizeof(struct airplane));
+		write(sock, &no_of_airplanes, sizeof(int));
 
 		lock.l_type = F_UNLCK;
 		fcntl(fd, F_SETLK, &lock);
@@ -517,7 +517,7 @@ int menu1(int sock, int id, int type){
 	read(sock, &op_id, sizeof(op_id));
 	if(op_id == 1){
 		//book a ticket
-		int fd = open(TRAIN, O_RDWR);
+		int fd = open(AIRPLANE, O_RDWR);
 
 		struct flock lock;
 		lock.l_type = F_WRLCK;
@@ -528,25 +528,25 @@ int menu1(int sock, int id, int type){
 		
 		fcntl(fd, F_SETLKW, &lock);
 
-		struct train temp;
+		struct airplane temp;
 		int fp = lseek(fd, 0, SEEK_END);
-		int no_of_trains = fp / sizeof(struct train);
-		write(sock, &no_of_trains, sizeof(int));
+		int no_of_airplanes = fp / sizeof(struct airplane);
+		write(sock, &no_of_airplanes, sizeof(int));
 		lseek(fd, 0, SEEK_SET);
 		while(fp != lseek(fd, 0, SEEK_CUR)){
-			read(fd, &temp, sizeof(struct train));
+			read(fd, &temp, sizeof(struct airplane));
 			write(sock, &temp.tid, sizeof(int));
-			write(sock, &temp.train_no, sizeof(int));	
+			write(sock, &temp.airplane_no, sizeof(int));	
 			write(sock, &temp.av_seats, sizeof(int));	
-			write(sock, &temp.train_name, sizeof(temp.train_name));		
+			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));		
 		}
-		//struct train temp1;
-		memset(&temp,0,sizeof(struct train));
-		int trainid, seats;
-		read(sock, &trainid, sizeof(trainid));
+		//struct airplane temp1;
+		memset(&temp,0,sizeof(struct airplane));
+		int airplaneid, seats;
+		read(sock, &airplaneid, sizeof(airplaneid));
 		//lseek(fd, 0, SEEK_SET);
-		lseek(fd, trainid*sizeof(struct train), SEEK_SET);
-		read(fd, &temp, sizeof(struct train));
+		lseek(fd, airplaneid*sizeof(struct airplane), SEEK_SET);
+		read(fd, &temp, sizeof(struct airplane));
 		write(sock, &temp.av_seats, sizeof(int));
 		read(sock, &seats, sizeof(seats));
 		if(seats>0){
@@ -565,9 +565,9 @@ int menu1(int sock, int id, int type){
 				bk.bid = 0;
 			bk.type = type;
 			bk.acc_no = id;
-			bk.tr_id = trainid;
+			bk.tr_id = airplaneid;
 			bk.cancelled = 0;
-			strcpy(bk.trainname, temp.train_name);
+			strcpy(bk.airplanename, temp.airplane_name);
 			bk.seat_start = temp.last_seatno_used + 1;
 			bk.seat_end = temp.last_seatno_used + seats;
 			temp.last_seatno_used = bk.seat_end;
@@ -575,7 +575,7 @@ int menu1(int sock, int id, int type){
 			lock.l_type = F_UNLCK;
 			fcntl(fd2, F_SETLK, &lock);
 		 	close(fd2);
-			lseek(fd, -1*sizeof(struct train), SEEK_CUR);
+			lseek(fd, -1*sizeof(struct airplane), SEEK_CUR);
 			write(fd, &temp, sizeof(temp));
 		}
 		fcntl(fd, F_SETLK, &lock);
@@ -595,7 +595,7 @@ int menu1(int sock, int id, int type){
 		//update booking
 		view_booking(sock, id, type);
 
-		int fd1 = open(TRAIN, O_RDWR);
+		int fd1 = open(AIRPLANE, O_RDWR);
 		int fd2 = open(BOOKING, O_RDWR);
 		struct flock lock;
 		lock.l_type = F_WRLCK;
@@ -608,20 +608,20 @@ int menu1(int sock, int id, int type){
 		fcntl(fd2, F_SETLKW, &lock);
 
 		int val;
-		struct train temp1;
+		struct airplane temp1;
 		struct bookings temp2;
 		read(sock, &val, sizeof(int));	
 		lseek(fd2, 0, SEEK_SET);
 		lseek(fd2, val*sizeof(struct bookings), SEEK_CUR);
 		read(fd2, &temp2, sizeof(temp2));
 		lseek(fd2, -1*sizeof(struct bookings), SEEK_CUR);
-		printf("%d %s %d\n", temp2.tr_id, temp2.trainname, temp2.seat_end);
+		printf("%d %s %d\n", temp2.tr_id, temp2.airplanename, temp2.seat_end);
 	
 		lseek(fd1, 0, SEEK_SET);
-		lseek(fd1, (temp2.tr_id-1)*sizeof(struct train), SEEK_CUR);
+		lseek(fd1, (temp2.tr_id-1)*sizeof(struct airplane), SEEK_CUR);
 		read(fd1, &temp1, sizeof(temp1));
-		lseek(fd1, -1*sizeof(struct train), SEEK_CUR);
-		printf("%d %s %d\n", temp1.tid, temp1.train_name, temp1.av_seats);
+		lseek(fd1, -1*sizeof(struct airplane), SEEK_CUR);
+		printf("%d %s %d\n", temp1.tid, temp1.airplane_name, temp1.av_seats);
 
 
 		read(sock, &val, sizeof(int));	
@@ -646,7 +646,7 @@ int menu1(int sock, int id, int type){
 				bk.acc_no = temp2.acc_no;
 				bk.tr_id = temp2.tr_id;
 				bk.cancelled = 0;
-				strcpy(bk.trainname, temp2.trainname);
+				strcpy(bk.airplanename, temp2.airplanename);
 				bk.seat_start = temp1.last_seatno_used + 1;
 				bk.seat_end = temp1.last_seatno_used + tot_seats;
 
@@ -696,13 +696,13 @@ int menu1(int sock, int id, int type){
 		lock.l_whence = SEEK_SET;
 		lock.l_pid = getpid();
 
-		int fd1 = open(TRAIN, O_RDWR);
+		int fd1 = open(AIRPLANE, O_RDWR);
 		int fd2 = open(BOOKING, O_RDWR);
 		fcntl(fd1, F_SETLKW, &lock);
 
 
 		int val;
-		struct train temp1;
+		struct airplane temp1;
 		struct bookings temp2;
 		read(sock, &val, sizeof(int));	
 		lseek(fd2, val*sizeof(struct bookings), SEEK_SET);
@@ -715,16 +715,16 @@ int menu1(int sock, int id, int type){
 		
 		read(fd2, &temp2, sizeof(temp2));
 		lseek(fd2, -1*sizeof(struct bookings), SEEK_CUR);
-		printf("%d %s %d\n", temp2.tr_id, temp2.trainname, temp2.seat_end);
+		printf("%d %s %d\n", temp2.tr_id, temp2.airplanename, temp2.seat_end);
 
 
-		lseek(fd1, (temp2.tr_id)*sizeof(struct train), SEEK_SET); 
-		lock.l_start = (temp2.tr_id)*sizeof(struct train);
-		lock.l_len = sizeof(struct train);
+		lseek(fd1, (temp2.tr_id)*sizeof(struct airplane), SEEK_SET); 
+		lock.l_start = (temp2.tr_id)*sizeof(struct airplane);
+		lock.l_len = sizeof(struct airplane);
 		fcntl(fd1, F_SETLKW, &lock);
 		read(fd1, &temp1, sizeof(temp1));
-		lseek(fd1, -1*sizeof(struct train), SEEK_CUR);
-		printf("%d %s %d\n", temp1.tid, temp1.train_name, temp1.av_seats);
+		lseek(fd1, -1*sizeof(struct airplane), SEEK_CUR);
+		printf("%d %s %d\n", temp1.tid, temp1.airplane_name, temp1.av_seats);
 		temp1.av_seats += temp2.seat_end - temp2.seat_start + 1;
 		temp2.cancelled=1;
 		write(fd2, &temp2, sizeof(temp2));
@@ -774,7 +774,7 @@ void view_booking(int sock, int id, int type){
 		write(sock, &entries, sizeof(entries));
 		for(fp=0;fp<entries;fp++){
 			write(sock, &bk[fp].bid, sizeof(bk[fp].bid));
-			write(sock, &bk[fp].trainname, sizeof(bk[fp].trainname));
+			write(sock, &bk[fp].airplanename, sizeof(bk[fp].airplanename));
 			write(sock, &bk[fp].seat_start, sizeof(int));
 			write(sock, &bk[fp].seat_end, sizeof(int));
 			write(sock, &bk[fp].cancelled, sizeof(int));
