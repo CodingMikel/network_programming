@@ -157,15 +157,18 @@ int do_admin_action(int sock, int opt){
 			char tname[20];
 			char departure[50];
 			char arrival[50];
+			int price;
 			write(sock, &opt, sizeof(opt));
 			printf("Enter Airplane Name: ");scanf("%s", tname);
 			printf("Enter Airplane No. : ");scanf("%d", &tno);
 			printf("Flight departure : ");scanf("%s", departure);
 			printf("Flight arrival : ");scanf("%s", arrival);
+			printf("Price : ");scanf("%d", &price);
 			write(sock, &tname, sizeof(tname));
 			write(sock, &tno, sizeof(tno));
 			write(sock, &departure, sizeof(departure));
 			write(sock, &arrival, sizeof(arrival));
+			write(sock, &price, sizeof(price));
 			
 			read(sock, &opt, sizeof(opt));
 			if(opt == 1 ) printf("Airplane Added Successfully.\n");

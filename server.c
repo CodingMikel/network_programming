@@ -27,6 +27,9 @@ struct airplane{
 	int airplane_no;
 	int av_seats;
 	int last_seatno_used;
+	char departure[50];
+	char arrival[50];
+	int price;
 };
 
 struct bookings{
@@ -287,13 +290,23 @@ int menu2(int sock, int id){
 		int tid = 0;
 		int tno; 
 		char tname[20];
+		char departure[50];
+		char arrival[50];
+		int price;
 		read(sock, &tname, sizeof(tname));
 		read(sock, &tno, sizeof(tno));
+		read(sock, &departure, sizeof(departure));
+		read(sock, &arrival, sizeof(arrival));
+		read(sock, &price, sizeof(price));
+
 		struct airplane temp, temp2;
 
 		temp.tid = tid;
 		temp.airplane_no = tno;
 		strcpy(temp.airplane_name, tname);
+		strcpy(temp.departure, departure);
+		strcpy(temp.arrival, arrival);
+		temp.price = price;
 		temp.av_seats = 15;
 		temp.last_seatno_used = 0;
 
@@ -350,7 +363,10 @@ int menu2(int sock, int id){
 			read(fd, &temp, sizeof(struct airplane));
 			write(sock, &temp.tid, sizeof(int));
 			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
-			write(sock, &temp.airplane_no, sizeof(int));			
+			write(sock, &temp.airplane_no, sizeof(int));
+			write(sock, &temp.departure, sizeof(temp.departure));
+			write(sock, &temp.arrival, sizeof(temp.arrival));
+			write(sock, &temp.price, sizeof(int));			
 		}
 		//int airplane_id=-1;
 		read(sock, &no_of_airplanes, sizeof(int));
@@ -392,7 +408,10 @@ int menu2(int sock, int id){
 			read(fd, &temp, sizeof(struct airplane));
 			write(sock, &temp.tid, sizeof(int));
 			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
-			write(sock, &temp.airplane_no, sizeof(int));			
+			write(sock, &temp.airplane_no, sizeof(int));
+			write(sock, &temp.departure, sizeof(temp.departure));
+			write(sock, &temp.arrival, sizeof(temp.arrival));
+			write(sock, &temp.price, sizeof(int));				
 		}
 		read(sock, &no_of_airplanes, sizeof(int));
 
@@ -412,13 +431,15 @@ int menu2(int sock, int id){
 			write(sock, &temp.airplane_no, sizeof(temp.airplane_no));
 			read(sock, &temp.airplane_no, sizeof(temp.airplane_no));
 		}
-		else{
+		else if (no_of_airplanes == 3){
 			write(sock, &temp.av_seats, sizeof(temp.av_seats));
 			read(sock, &temp.av_seats, sizeof(temp.av_seats));
 		}
-
+		// else if (no_of_airplanes == 4){
+			// update new fields to modify
+		// }
 		no_of_airplanes = 3;
-		printf("%s\t%d\t%d\n", temp.airplane_name, temp.airplane_no, temp.av_seats);
+		printf("%s\t%d\t%d\t%s\t%s\t%d\n", temp.airplane_name, temp.airplane_no, temp.av_seats, temp.departure, temp.arrival, temp.price);
 		lseek(fd, -1*sizeof(struct airplane), SEEK_CUR);
 		write(fd, &temp, sizeof(struct airplane));
 		write(sock, &no_of_airplanes, sizeof(int));
