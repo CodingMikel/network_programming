@@ -41,6 +41,9 @@ struct bookings{
 	int seat_start;
 	int seat_end;
 	int cancelled;
+	char departure[50];
+	char arrival[50];
+	int price;
 };
 
 //create a variable to contain data storage paths
@@ -560,6 +563,9 @@ int menu1(int sock, int id, int type){
 			write(sock, &temp.airplane_no, sizeof(int));	
 			write(sock, &temp.av_seats, sizeof(int));	
 			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));		
+			write(socket, &temp.departure, sizeof(temp.departure));
+			write(socket, &temp.arrival, sizeof(temp.arrival));
+			write(socket, &temp.price, sizeof(int));
 		}
 		//struct airplane temp1;
 		memset(&temp,0,sizeof(struct airplane));

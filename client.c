@@ -300,16 +300,22 @@ int do_action(int sock, int opt){
 	
 			int airplanes, airplaneid, airplaneavseats, airplaneno, required_seats;
 			char airplanename[20];
+			char airplanedepart[50];
+			char airplanearrive[50];
+			int airplaneprice;
 			write(sock, &opt, sizeof(opt));
 			read(sock, &airplanes, sizeof(airplanes));
-			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\n");
+			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE\n");
 			while(airplanes--){
 				read(sock, &airplaneid, sizeof(airplaneid));
 				read(sock, &airplaneno, sizeof(airplaneno));
 				read(sock, &airplaneavseats, sizeof(airplaneavseats));
 				read(sock, &airplanename, sizeof(airplanename));
+				read(sock, &airplanedepart, sizeof(airplanedepart));
+				read(sock, &airplanearrive, sizeof(airplanearrive));
+				read(sock, &airplaneprice, sizeof(airplaneprice));
 				if(strcmp(airplanename, "deleted")!=0)
-				printf("%d\t%d\t%d\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename);
+				printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice);
 			}
 			printf("Enter the airplane ID: "); scanf("%d", &airplaneid);
 			write(sock, &airplaneid, sizeof(airplaneid));
@@ -399,6 +405,9 @@ void view_booking(int sock){
 	while(entries--){
 		int bid, bks_seat, bke_seat, cancelled;
 		char airplanename[20];
+		char airplanedepart[50];
+		char airplanearrive[50];
+		int airplaneprice;
 		read(sock,&bid, sizeof(bid));
 		read(sock,&airplanename, sizeof(airplanename));
 		read(sock,&bks_seat, sizeof(int));
