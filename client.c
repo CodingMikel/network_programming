@@ -305,7 +305,7 @@ int do_action(int sock, int opt){
 			int airplaneprice;
 			write(sock, &opt, sizeof(opt));
 			read(sock, &airplanes, sizeof(airplanes));
-			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE\n");
+			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL PRICE($)\n");
 			while(airplanes--){
 				read(sock, &airplaneid, sizeof(airplaneid));
 				read(sock, &airplaneno, sizeof(airplaneno));
@@ -412,9 +412,12 @@ void view_booking(int sock){
 		read(sock,&airplanename, sizeof(airplanename));
 		read(sock,&bks_seat, sizeof(int));
 		read(sock,&bke_seat, sizeof(int));
+		read(sock,&airplanedepart, sizeof(airplanedepart));
+		read(sock,&airplanearrive, sizeof(airplanearrive));
+		read(sock,&airplaneprice, sizeof(int));
 		read(sock,&cancelled, sizeof(int));
 		if(!cancelled)
-		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tAIRPLANE :%s\n", bid, bks_seat, bke_seat, airplanename);
+		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tAIRPLANE :%s\tDEPARTURE :%s\tARRIVAL :%s\tPRICE :%d\n", bid, bks_seat, bke_seat, airplanename, airplanedepart, airplanearrive, airplaneprice);
 	}
 	printf("Press any key to continue...\n");
 	while(getchar()!='\n');

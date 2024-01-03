@@ -563,9 +563,9 @@ int menu1(int sock, int id, int type){
 			write(sock, &temp.airplane_no, sizeof(int));	
 			write(sock, &temp.av_seats, sizeof(int));	
 			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));		
-			write(socket, &temp.departure, sizeof(temp.departure));
-			write(socket, &temp.arrival, sizeof(temp.arrival));
-			write(socket, &temp.price, sizeof(int));
+			write(sock, &temp.departure, sizeof(temp.departure));
+			write(sock, &temp.arrival, sizeof(temp.arrival));
+			write(sock, &temp.price, sizeof(int));
 		}
 		//struct airplane temp1;
 		memset(&temp,0,sizeof(struct airplane));
@@ -804,6 +804,9 @@ void view_booking(int sock, int id, int type){
 			write(sock, &bk[fp].airplanename, sizeof(bk[fp].airplanename));
 			write(sock, &bk[fp].seat_start, sizeof(int));
 			write(sock, &bk[fp].seat_end, sizeof(int));
+			write(sock, &bk[fp].departure, sizeof(bk[fp].departure));
+			write(sock, &bk[fp].arrival, sizeof(bk[fp].arrival));
+			write(sock, &bk[fp].price, sizeof(int));
 			write(sock, &bk[fp].cancelled, sizeof(int));
 		}
 	}
