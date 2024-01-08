@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#define PORT 5000
+#define PORT 8080
 #define PASS_LENGTH 20
 
 int airplanesys(int sock);
@@ -15,7 +15,7 @@ int do_action(int sock, int opt);
 void view_booking(int sock);
 
 int main(int argc, char * argv[]){
-	char *ip = "127.0.0.1"; //default ip address if there is no parameter
+	char *ip = "172.29.222.246"; //default ip address if there is no parameter
 	if(argc==2){
 		// if there are 2 parameters then the ip will be assigned
 		ip = argv[1];
@@ -161,7 +161,7 @@ int do_admin_action(int sock, int opt){
 			char boarding_time[6];
 			int price;
 			write(sock, &opt, sizeof(opt));
-			printf("Enter Airplane Name: ");scanf("%s", tname);
+			printf("Enter Airplane Name : "); scanf(" %[^\n]", tname);
 			printf("Enter Airplane No. : ");scanf("%d", &tno);
 			printf("Flight departure : ");scanf("%s", departure);
 			printf("Flight arrival : ");scanf("%s", arrival);

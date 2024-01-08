@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h> 
-#define PORT 5000
+#define PORT 8080
 #define AIRPLANE "./db/airplane"
 #define BOOKING "./db/booking"
 #define PASS_LENGTH 30
@@ -576,7 +576,7 @@ int menu1(int sock, int id, int type){
 			write(sock, &temp.tid, sizeof(int));
 			write(sock, &temp.airplane_no, sizeof(int));	
 			write(sock, &temp.av_seats, sizeof(int));	
-			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));		
+			write(sock, &temp.airplane_name, sizeof(temp.airplane_name));	
 			write(sock, &temp.departure, sizeof(temp.departure));
 			write(sock, &temp.arrival, sizeof(temp.arrival));
 			write(sock, &temp.price, sizeof(int));
@@ -587,7 +587,7 @@ int menu1(int sock, int id, int type){
 		memset(&temp,0,sizeof(struct airplane));
 		int airplaneid, seats;
 		read(sock, &airplaneid, sizeof(airplaneid));
-		//lseek(fd, 0, SEEK_SET);
+		// lseek(fd, 0, SEEK_SET);
 		lseek(fd, airplaneid*sizeof(struct airplane), SEEK_SET);
 		read(fd, &temp, sizeof(struct airplane));
 		write(sock, &temp.av_seats, sizeof(int));
@@ -611,6 +611,17 @@ int menu1(int sock, int id, int type){
 			bk.tr_id = airplaneid;
 			bk.cancelled = 0;
 			strcpy(bk.airplanename, temp.airplane_name);
+			strcpy(bk.departure, temp.departure);
+			strcpy(bk.arrival, temp.arrival);
+			bk.price = temp.price;
+			strcpy(bk.date, temp.date);
+			strcpy(bk.boarding_time, temp.boarding_time);
+			printf("airplanename: %s\n", bk.airplanename);
+			printf("departure: %s\n", bk.departure);
+			printf("arrival: %s\n", bk.arrival);
+			printf("price: %d\n", bk.price);
+			printf("date: %s\n", bk.date);
+			printf("boarding_time: %s\n", bk.boarding_time);
 			bk.seat_start = temp.last_seatno_used + 1;
 			bk.seat_end = temp.last_seatno_used + seats;
 			temp.last_seatno_used = bk.seat_end;
