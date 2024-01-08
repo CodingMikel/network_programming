@@ -157,6 +157,8 @@ int do_admin_action(int sock, int opt){
 			char tname[20];
 			char departure[50];
 			char arrival[50];
+			char date[10];
+			char boarding_time[6];
 			int price;
 			write(sock, &opt, sizeof(opt));
 			printf("Enter Airplane Name: ");scanf("%s", tname);
@@ -164,11 +166,15 @@ int do_admin_action(int sock, int opt){
 			printf("Flight departure : ");scanf("%s", departure);
 			printf("Flight arrival : ");scanf("%s", arrival);
 			printf("Price : ");scanf("%d", &price);
+			printf("Date: "); scanf("%s", date);
+			printf("Boarding time: "); scanf("%s", boarding_time);
 			write(sock, &tname, sizeof(tname));
 			write(sock, &tno, sizeof(tno));
 			write(sock, &departure, sizeof(departure));
 			write(sock, &arrival, sizeof(arrival));
 			write(sock, &price, sizeof(price));
+			write(sock, &date, sizeof(date));
+			write(sock, &boarding_time, sizeof(boarding_time));
 			
 			read(sock, &opt, sizeof(opt));
 			if(opt == 1 ) printf("Airplane Added Successfully.\n");
@@ -303,9 +309,11 @@ int do_action(int sock, int opt){
 			char airplanedepart[50];
 			char airplanearrive[50];
 			int airplaneprice;
+			char airplanedate[10];
+			char airplane_boarding_time[6];
 			write(sock, &opt, sizeof(opt));
 			read(sock, &airplanes, sizeof(airplanes));
-			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL PRICE($)\n");
+			printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
 			while(airplanes--){
 				read(sock, &airplaneid, sizeof(airplaneid));
 				read(sock, &airplaneno, sizeof(airplaneno));
@@ -314,8 +322,10 @@ int do_action(int sock, int opt){
 				read(sock, &airplanedepart, sizeof(airplanedepart));
 				read(sock, &airplanearrive, sizeof(airplanearrive));
 				read(sock, &airplaneprice, sizeof(airplaneprice));
+				read(sock, &airplanedate, sizeof(airplanedate));
+				read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 				if(strcmp(airplanename, "deleted")!=0)
-				printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice);
+				printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 			}
 			printf("Enter the airplane ID: "); scanf("%d", &airplaneid);
 			write(sock, &airplaneid, sizeof(airplaneid));
@@ -408,16 +418,20 @@ void view_booking(int sock){
 		char airplanedepart[50];
 		char airplanearrive[50];
 		int airplaneprice;
+		char airplanedate[10];
+		char airplane_boarding_time[6];
 		read(sock,&bid, sizeof(bid));
 		read(sock,&airplanename, sizeof(airplanename));
 		read(sock,&bks_seat, sizeof(int));
 		read(sock,&bke_seat, sizeof(int));
+		read(sock,&cancelled, sizeof(int));
 		read(sock,&airplanedepart, sizeof(airplanedepart));
 		read(sock,&airplanearrive, sizeof(airplanearrive));
 		read(sock,&airplaneprice, sizeof(int));
-		read(sock,&cancelled, sizeof(int));
+		read(sock,&airplanedate, sizeof(airplanedate));
+		read(sock,&airplane_boarding_time, sizeof(airplane_boarding_time));
 		if(!cancelled)
-		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tAIRPLANE :%s\tDEPARTURE :%s\tARRIVAL :%s\tPRICE :%d\n", bid, bks_seat, bke_seat, airplanename, airplanedepart, airplanearrive, airplaneprice);
+		printf("BookingID: %d\t1st Ticket: %d\tLast Ticket: %d\tAIRPLANE :%s\tDEPARTURE :%s\tARRIVAL :%s\tPRICE :%d\tDATE: %s\tBOARDING TIME: %s\n", bid, bks_seat, bke_seat, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 	}
 	printf("Press any key to continue...\n");
 	while(getchar()!='\n');

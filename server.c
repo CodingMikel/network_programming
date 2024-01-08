@@ -30,6 +30,8 @@ struct airplane{
 	char departure[50];
 	char arrival[50];
 	int price;
+	char date[10];
+	char boarding_time[6];
 };
 
 struct bookings{
@@ -44,6 +46,8 @@ struct bookings{
 	char departure[50];
 	char arrival[50];
 	int price;
+	char date[10];
+	char boarding_time[6];
 };
 
 //create a variable to contain data storage paths
@@ -296,11 +300,15 @@ int menu2(int sock, int id){
 		char departure[50];
 		char arrival[50];
 		int price;
+		char date[10];
+		char boarding_time[6];
 		read(sock, &tname, sizeof(tname));
 		read(sock, &tno, sizeof(tno));
 		read(sock, &departure, sizeof(departure));
 		read(sock, &arrival, sizeof(arrival));
 		read(sock, &price, sizeof(price));
+		read(sock, &date, sizeof(date));
+		read(sock, &boarding_time, sizeof(boarding_time));
 
 		struct airplane temp, temp2;
 
@@ -310,6 +318,8 @@ int menu2(int sock, int id){
 		strcpy(temp.departure, departure);
 		strcpy(temp.arrival, arrival);
 		temp.price = price;
+		strcpy(temp.date, date);
+		strcpy(temp.boarding_time, boarding_time);
 		temp.av_seats = 15;
 		temp.last_seatno_used = 0;
 
@@ -369,7 +379,9 @@ int menu2(int sock, int id){
 			write(sock, &temp.airplane_no, sizeof(int));
 			write(sock, &temp.departure, sizeof(temp.departure));
 			write(sock, &temp.arrival, sizeof(temp.arrival));
-			write(sock, &temp.price, sizeof(int));			
+			write(sock, &temp.price, sizeof(int));		
+			write(sock, &temp.date, sizeof(temp.date));
+			write(sock, &temp.boarding_time, sizeof(temp.boarding_time));	
 		}
 		//int airplane_id=-1;
 		read(sock, &no_of_airplanes, sizeof(int));
@@ -414,7 +426,9 @@ int menu2(int sock, int id){
 			write(sock, &temp.airplane_no, sizeof(int));
 			write(sock, &temp.departure, sizeof(temp.departure));
 			write(sock, &temp.arrival, sizeof(temp.arrival));
-			write(sock, &temp.price, sizeof(int));				
+			write(sock, &temp.price, sizeof(int));		
+			write(sock, &temp.date, sizeof(temp.date));
+			write(sock, &temp.boarding_time, sizeof(temp.boarding_time));		
 		}
 		read(sock, &no_of_airplanes, sizeof(int));
 
@@ -442,7 +456,7 @@ int menu2(int sock, int id){
 			// update new fields to modify
 		// }
 		no_of_airplanes = 3;
-		printf("%s\t%d\t%d\t%s\t%s\t%d\n", temp.airplane_name, temp.airplane_no, temp.av_seats, temp.departure, temp.arrival, temp.price);
+		printf("%s\t%d\t%d\t%s\t%s\t%d\t%s\t%s\n", temp.airplane_name, temp.airplane_no, temp.av_seats, temp.departure, temp.arrival, temp.price, temp.date, temp.boarding_time);
 		lseek(fd, -1*sizeof(struct airplane), SEEK_CUR);
 		write(fd, &temp, sizeof(struct airplane));
 		write(sock, &no_of_airplanes, sizeof(int));
@@ -566,6 +580,8 @@ int menu1(int sock, int id, int type){
 			write(sock, &temp.departure, sizeof(temp.departure));
 			write(sock, &temp.arrival, sizeof(temp.arrival));
 			write(sock, &temp.price, sizeof(int));
+			write(sock, &temp.date, sizeof(temp.date));
+			write(sock, &temp.boarding_time, sizeof(temp.boarding_time));
 		}
 		//struct airplane temp1;
 		memset(&temp,0,sizeof(struct airplane));
@@ -804,10 +820,12 @@ void view_booking(int sock, int id, int type){
 			write(sock, &bk[fp].airplanename, sizeof(bk[fp].airplanename));
 			write(sock, &bk[fp].seat_start, sizeof(int));
 			write(sock, &bk[fp].seat_end, sizeof(int));
+			write(sock, &bk[fp].cancelled, sizeof(int));
 			write(sock, &bk[fp].departure, sizeof(bk[fp].departure));
 			write(sock, &bk[fp].arrival, sizeof(bk[fp].arrival));
 			write(sock, &bk[fp].price, sizeof(int));
-			write(sock, &bk[fp].cancelled, sizeof(int));
+			write(sock, &bk[fp].date, sizeof(bk[fp].date));
+			write(sock, &bk[fp].boarding_time, sizeof(bk[fp].boarding_time));
 		}
 	}
 	lock.l_type = F_UNLCK;
