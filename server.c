@@ -346,6 +346,8 @@ int menu2(int sock, int id)
 		char date[10];
 		char boarding_time[7];
 		read(sock, &tname, sizeof(tname));
+		tname[sizeof(tname) - 1] = '\0';
+		printf("airplane name: %s\n", tname);
 		read(sock, &tno, sizeof(tno));
 		read(sock, &departure, sizeof(departure));
 		read(sock, &arrival, sizeof(arrival));

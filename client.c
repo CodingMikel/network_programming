@@ -189,7 +189,8 @@ int do_admin_action(int sock, int opt)
 		int price;
 		write(sock, &opt, sizeof(opt));
 		printf("Enter Airplane Name : ");
-		scanf(" %[^\n]", tname);
+		scanf(" %[^\n]%*c", tname);
+		printf("Airplane Name : %s\n", tname);
 		printf("Enter Airplane No. : ");
 		scanf("%d", &tno);
 		printf("Flight departure : ");
