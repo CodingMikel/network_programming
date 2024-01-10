@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#define PORT 8080
+#define PORT 8888
 #define PASS_LENGTH 20
 
 int airplanesys(int sock);
@@ -152,7 +152,8 @@ int menu2(int sock, int type)
 		printf("2. View Bookings\n");
 		printf("3. Update Booking\n");
 		printf("4. Cancel booking\n");
-		printf("5. Logout\n");
+		printf("5. Search flights\n");
+		printf("6. Logout\n");
 		printf("Your Choice: ");
 		scanf("%d", &opt);
 		return do_action(sock, opt);
@@ -184,7 +185,7 @@ int do_admin_action(int sock, int opt)
 		char tname[20];
 		char departure[50];
 		char arrival[50];
-		char date[10];
+		char date[11];
 		char boarding_time[7];
 		int price;
 		write(sock, &opt, sizeof(opt));
@@ -381,7 +382,7 @@ int do_action(int sock, int opt)
 		char airplanedepart[50];
 		char airplanearrive[50];
 		int airplaneprice;
-		char airplanedate[10];
+		char airplanedate[11];
 		char airplane_boarding_time[7];
 		write(sock, &opt, sizeof(opt));
 		read(sock, &airplanes, sizeof(airplanes));
@@ -489,28 +490,16 @@ int do_action(int sock, int opt)
 	}
 	case 5:
 	{
-		write(sock, &opt, sizeof(opt));
-		read(sock, &opt, sizeof(opt));
-		if (opt == 5)
-			printf("Logged out successfully.\n");
-		while (getchar() != '\n')
-			;
-		getchar();
-		return -1;
-		break;
-	}
-	case 6:
-	{
 		int airplanes, airplaneid, airplaneavseats, airplaneno, required_seats;
 		char airplanename[20];
 		char airplanedepart[50];
 		char airplanearrive[50];
 		int airplaneprice;
-		char airplanedate[10];
+		char airplanedate[11];
 		char airplane_boarding_time[7];
 		write(sock, &opt, sizeof(opt));
 		read(sock, &airplanes, sizeof(airplanes));
-		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\t\tDEPARTURE\t\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
 		while (airplanes--)
 		{
 			read(sock, &airplaneid, sizeof(airplaneid));
@@ -523,29 +512,41 @@ int do_action(int sock, int opt)
 			read(sock, &airplanedate, sizeof(airplanedate));
 			read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 			if (strcmp(airplanename, "deleted") != 0)
-				printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
+				printf("%d\t%d\t%d\t%s\t\t%s\t\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 		}
 
 		int sub_options = -1;
-		while (sub_options != 0)
+
+		printf("\n\t\t\t###Searching menu###\n");
+		printf("1. Search by airplane name.\n");
+		printf("2. Search by depature.\n");
+		printf("3. Search by arrival\n");
+		printf("4. Search by date.\n");
+		printf("0. Exit searching.\n");
+		printf("Enter options of searching: ");
+		scanf("%d", &sub_options);
+		if (sub_options != 0)
 		{
-			printf("\n\t\t\t###Searching menu###");
-			printf("1. Search by airplane name.\n");
-			printf("2. Search by depature.\n");
-			printf("3. Search by arrival\n");
-			printf("4. Search by date.\n");
-			printf("0. Exit searching.\n");
-			printf("Enter options of searching: ");
-			scanf("%d", &sub_options);
-			if (sub_options != 0)
-			{
-				menu_search(sock, sub_options);
-			}
+			menu_search(sock, sub_options);
+			printf("Search successful\n");
 		}
+
 		while (getchar() != '\n')
 			;
 		getchar();
 		return 6;
+	}
+	case 6:
+	{
+		write(sock, &opt, sizeof(opt));
+		read(sock, &opt, sizeof(opt));
+		if (opt == 5)
+			printf("Logged out successfully.\n");
+		while (getchar() != '\n')
+			;
+		getchar();
+		return -1;
+		break;
 	}
 	default:
 		return -1;
@@ -556,11 +557,11 @@ int menu_search(int sock, int search_option)
 {
 	char search_query[50];
 
-	printf("Enter airplane name: ");
+	printf("Enter search query: ");
 	scanf("%s", search_query);
 	write(sock, &search_option, sizeof(search_option));
 	write(sock, &search_query, sizeof(search_query));
-
+	printf("Search query: %s\n", search_query);
 	int found_airplanes;
 	read(sock, &found_airplanes, sizeof(found_airplanes));
 
@@ -574,9 +575,10 @@ int menu_search(int sock, int search_option)
 	char airplanedepart[50];
 	char airplanearrive[50];
 	int airplaneprice;
-	char airplanedate[10];
+	char airplanedate[11];
 	char airplane_boarding_time[7];
-	printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+	printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\t\tDEPARTURE\t\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+
 	for (int i = 0; i < found_airplanes; i++)
 	{
 		read(sock, &airplaneid, sizeof(airplaneid));
@@ -590,7 +592,7 @@ int menu_search(int sock, int search_option)
 		read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 
 		if (strcmp(airplanename, "deleted") != 0)
-			printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
+			printf("%d\t%d\t%d\t%s\t\t%s\t\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 	}
 }
 
@@ -611,7 +613,7 @@ void view_booking(int sock)
 		char airplanedepart[50];
 		char airplanearrive[50];
 		int airplaneprice;
-		char airplanedate[10];
+		char airplanedate[11];
 		char airplane_boarding_time[7];
 		read(sock, &bid, sizeof(bid));
 		read(sock, &airplanename, sizeof(airplanename));

@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#define PORT 8080
+#define PORT 8888
 #define AIRPLANE "./db/airplane"
 #define BOOKING "./db/booking"
 #define PASS_LENGTH 30
@@ -32,7 +32,7 @@ struct airplane
 	char departure[50];
 	char arrival[50];
 	int price;
-	char date[10];
+	char date[11];
 	char boarding_time[7];
 };
 
@@ -49,7 +49,7 @@ struct bookings
 	char departure[50];
 	char arrival[50];
 	int price;
-	char date[10];
+	char date[11];
 	char boarding_time[7];
 };
 
@@ -343,7 +343,7 @@ int menu2(int sock, int id)
 		char departure[50];
 		char arrival[50];
 		int price;
-		char date[10];
+		char date[11];
 		char boarding_time[7];
 		read(sock, &tname, sizeof(tname));
 		tname[sizeof(tname) - 1] = '\0';
@@ -862,11 +862,6 @@ int menu1(int sock, int id, int type)
 	}
 	if (op_id == 5)
 	{
-		write(sock, &op_id, sizeof(op_id));
-		return -1;
-	}
-	if (op_id == 6)
-	{
 		// searching information
 		int fd = open(AIRPLANE, O_RDWR);
 
@@ -905,50 +900,72 @@ int menu1(int sock, int id, int type)
 		char search_query[50];
 		read(sock, &search_option, sizeof(search_option));
 		read(sock, &search_query, sizeof(search_query));
-		while (fp != lseek(fd, 0, SEEK_CUR))
+		printf("search_option: %d\n", search_option);
+		printf("search_query: %s\n", search_query);
+
+		struct airplane matching_airplanes[no_of_airplanes];
+
+		for (int i = 1; i <= no_of_airplanes; i++)
 		{
-			read(fd, &temp, sizeof(struct airplane));
+			struct airplane temp1;
+			read(fd, &temp1, sizeof(struct airplane));
+			
 			// Check for a match based on the search option
 			int match = 0;
 			switch (search_option)
 			{
 			case 1: // Search by airplane name
-				if (strstr(temp.airplane_name, search_query) != NULL)
+				if (strstr(temp1.airplane_name, search_query) != NULL)
 					match = 1;
+				matching_airplanes[found_airplanes] = temp1;
 				break;
 			case 2: // Search by departure
-				if (strstr(temp.departure, search_query) != NULL)
+				if (strstr(temp1.departure, search_query) != NULL)
 					match = 1;
+				matching_airplanes[found_airplanes] = temp1;
 				break;
 			case 3: // Search by arrival
-				if (strstr(temp.arrival, search_query) != NULL)
+				if (strstr(temp1.arrival, search_query) != NULL)
 					match = 1;
+				matching_airplanes[found_airplanes] = temp1;
 				break;
 			case 4: // Search by date
-				if (strstr(temp.date, search_query) != NULL)
+				if (strstr(temp1.date, search_query) != NULL)
 					match = 1;
+				matching_airplanes[found_airplanes] = temp1;
 				break;
 			}
 
-			if (match)
+			if (match == 1)
 			{
 				found_airplanes++;
-				write(sock, &temp.tid, sizeof(int));
-				write(sock, &temp.airplane_no, sizeof(int));
-				write(sock, &temp.av_seats, sizeof(int));
-				write(sock, &temp.airplane_name, sizeof(temp.airplane_name));
-				write(sock, &temp.departure, sizeof(temp.departure));
-				write(sock, &temp.arrival, sizeof(temp.arrival));
-				write(sock, &temp.price, sizeof(int));
-				write(sock, &temp.date, sizeof(temp.date));
-				write(sock, &temp.boarding_time, sizeof(temp.boarding_time));
 			}
 		}
+		write(sock, &found_airplanes, sizeof(found_airplanes));
+		for (int i = 0; i < found_airplanes; i++)
+		{
+			write(sock, &matching_airplanes[i].tid, sizeof(int));
+			write(sock, &matching_airplanes[i].airplane_no, sizeof(int));
+			write(sock, &matching_airplanes[i].av_seats, sizeof(int));
+			write(sock, &matching_airplanes[i].airplane_name, sizeof(matching_airplanes[i].airplane_name));
+			write(sock, &matching_airplanes[i].departure, sizeof(matching_airplanes[i].departure));
+			write(sock, &matching_airplanes[i].arrival, sizeof(matching_airplanes[i].arrival));
+			write(sock, &matching_airplanes[i].price, sizeof(int));
+			write(sock, &matching_airplanes[i].date, sizeof(matching_airplanes[i].date));
+			write(sock, &matching_airplanes[i].boarding_time, sizeof(matching_airplanes[i].boarding_time));
+		}
+		found_airplanes = 0;
+		memset(&matching_airplanes, 0, sizeof(struct airplane) * found_airplanes);
 		// Release the lock
-		lock.l_type = F_UNLCK;
 		fcntl(fd, F_SETLK, &lock);
+		close(fd);
 
-		return found_airplanes;
+		return 5;
+	}
+	if (op_id == 6)
+	{
+		write(sock, &op_id, sizeof(op_id));
+		return -1;
 	}
 }
 
