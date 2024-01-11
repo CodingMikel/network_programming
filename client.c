@@ -386,7 +386,8 @@ int do_action(int sock, int opt)
 		char airplane_boarding_time[7];
 		write(sock, &opt, sizeof(opt));
 		read(sock, &airplanes, sizeof(airplanes));
-		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\t\tPRICE($)\tDATE\t\tBOARDING TIME\n");
+
 		while (airplanes--)
 		{
 			read(sock, &airplaneid, sizeof(airplaneid));
@@ -399,8 +400,14 @@ int do_action(int sock, int opt)
 			read(sock, &airplanedate, sizeof(airplanedate));
 			read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 			if (strcmp(airplanename, "deleted") != 0)
-				printf("%d\t%d\t%d\t%s\t%s\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
+				printf("%-3d\t%-5d\t%-7d\t%-15s\t%-10s\t%-10s\t%-8d\t%-10s\t%-20s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 		}
+
+		printf("Enter your email: ");
+		char mail[50];
+		char command[1000];
+		scanf("%s", mail);
+
 		printf("Enter the airplane ID: ");
 		scanf("%d", &airplaneid);
 		write(sock, &airplaneid, sizeof(airplaneid));
@@ -417,15 +424,53 @@ int do_action(int sock, int opt)
 		read(sock, &opt, sizeof(opt));
 
 		if (opt == 1)
+		{
 			printf("Tickets booked successfully\n");
-		else
+			sprintf(command,
+					"curl -s --url 'smtp://smtp.gmail.com:587' --ssl-reqd "
+					"--mail-from 'luuducquang1902@gmail.com' --mail-rcpt %s "
+					"--user 'luuducquang1902@gmail.com:zmvs iczt bvui aymn' --tlsv1.2 --upload-file email.txt",
+					mail);
+			system(command);
+			if (system(command) == 0)
+			{
+				printf("Email has been successfully sent to: %s\n", mail);
+
+				printf("Please choose payment's method:\n");
+				printf("1. Cash\n");
+				printf("2. Payment card\n");
+				printf("3. Onine banking\n");
+				int option2;
+				scanf("%d", &option2);
+				switch (option2)
+				{
+				case 1:
+					printf("Please go to HUST to pay your bill within 2 days\n");
+					break;
+				case 2:
+					int card_number, CVV;
+					printf("Please enter your card number:\n");
+					scanf("%d", &card_number);
+					printf("Please enter your CVV:\n");
+					scanf("%d", &CVV);
+					printf("Payment successfully\n");
+					break;
+				case 3:
+					printf("Please transfer to this banking account: 99999999999 - VCB");
+					break;
+				}
+			}
+			else
+			{
+				printf("Failed to send email to: %s\n", mail);
+			}
+		}
+		else{
 			printf("Tickets were not booked. Please try again.\n");
+		}
 		printf("Press any key to continue...\n");
-		while (getchar() != '\n')
-			;
+		while (getchar() != '\n');
 		getchar();
-		while (!getchar())
-			;
 		return 1;
 	}
 	case 2:
@@ -442,6 +487,12 @@ int do_action(int sock, int opt)
 		int val;
 		write(sock, &opt, sizeof(opt));
 		view_booking(sock);
+
+		printf("Enter your email: ");
+		char mail[50];
+		char command[1000];
+		scanf("%s", mail);
+
 		printf("Enter the booking id to be updated: ");
 		scanf("%d", &val);
 		write(sock, &val, sizeof(int));
@@ -464,7 +515,24 @@ int do_action(int sock, int opt)
 		if (opt == -2)
 			printf("Operation failed. No more available seats\n");
 		else
+		{
 			printf("Operation succeded.\n");
+			sprintf(command,
+					"curl -s --url 'smtp://smtp.gmail.com:587' --ssl-reqd "
+					"--mail-from 'luuducquang1902@gmail.com' --mail-rcpt %s "
+					"--user 'luuducquang1902@gmail.com:zmvs iczt bvui aymn' --tlsv1.2 --upload-file update_book_email.txt",
+					mail);
+			system(command);
+			if (system(command) == 0)
+			{
+				printf("Email has been successfully sent to: %s\n", mail);
+			}
+			else
+			{
+				printf("Failed to send email to: %s\n", mail);
+			}
+		}
+
 		while (getchar() != '\n')
 			;
 		getchar();
@@ -474,6 +542,12 @@ int do_action(int sock, int opt)
 	{
 		write(sock, &opt, sizeof(opt));
 		view_booking(sock);
+
+		printf("Enter your email: ");
+		char mail[50];
+		char command[1000];
+		scanf("%s", mail);
+
 		int val;
 		printf("Enter the booking id to be deleted: ");
 		scanf("%d", &val);
@@ -482,7 +556,24 @@ int do_action(int sock, int opt)
 		if (opt == -2)
 			printf("Operation failed. No more available seats\n");
 		else
+		{
 			printf("Operation succeded.\n");
+			sprintf(command,
+					"curl -s --url 'smtp://smtp.gmail.com:587' --ssl-reqd "
+					"--mail-from 'luuducquang1902@gmail.com' --mail-rcpt %s "
+					"--user 'luuducquang1902@gmail.com:zmvs iczt bvui aymn' --tlsv1.2 --upload-file cancel_book_email.txt",
+					mail);
+			system(command);
+			if (system(command) == 0)
+			{
+				printf("Email has been successfully sent to: %s\n", mail);
+			}
+			else
+			{
+				printf("Failed to send email to: %s\n", mail);
+			}
+		}
+
 		while (getchar() != '\n')
 			;
 		getchar();
@@ -499,7 +590,8 @@ int do_action(int sock, int opt)
 		char airplane_boarding_time[7];
 		write(sock, &opt, sizeof(opt));
 		read(sock, &airplanes, sizeof(airplanes));
-		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\t\tDEPARTURE\t\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+		printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\t\tPRICE($)\tDATE\t\tBOARDING TIME\n");
+
 		while (airplanes--)
 		{
 			read(sock, &airplaneid, sizeof(airplaneid));
@@ -512,7 +604,7 @@ int do_action(int sock, int opt)
 			read(sock, &airplanedate, sizeof(airplanedate));
 			read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 			if (strcmp(airplanename, "deleted") != 0)
-				printf("%d\t%d\t%d\t%s\t\t%s\t\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
+				printf("%-3d\t%-5d\t%-7d\t%-15s\t%-10s\t%-10s\t%-8d\t%-10s\t%-20s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 		}
 
 		int sub_options = -1;
@@ -577,7 +669,7 @@ int menu_search(int sock, int search_option)
 	int airplaneprice;
 	char airplanedate[11];
 	char airplane_boarding_time[7];
-	printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\t\tDEPARTURE\t\tARRIVAL\tPRICE($)\tDATE\tBOARDING TIME\n");
+	printf("ID\tT_NO\tAV_SEAT\tAIRPLANE NAME\tDEPARTURE\tARRIVAL\t\tPRICE($)\tDATE\t\tBOARDING TIME\n");
 
 	for (int i = 0; i < found_airplanes; i++)
 	{
@@ -592,7 +684,7 @@ int menu_search(int sock, int search_option)
 		read(sock, &airplane_boarding_time, sizeof(airplane_boarding_time));
 
 		if (strcmp(airplanename, "deleted") != 0)
-			printf("%d\t%d\t%d\t%s\t\t%s\t\t%s\t%d\t%s\t%s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
+			printf("%-3d\t%-5d\t%-7d\t%-15s\t%-10s\t%-10s\t%-8d\t%-10s\t%-20s\n", airplaneid, airplaneno, airplaneavseats, airplanename, airplanedepart, airplanearrive, airplaneprice, airplanedate, airplane_boarding_time);
 	}
 }
 
