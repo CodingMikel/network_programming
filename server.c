@@ -617,7 +617,7 @@ int menu1(int sock, int id, int type)
 {
 	int op_id;
 	read(sock, &op_id, sizeof(op_id));
-	if (op_id == 1)
+	if (op_id == 2)
 	{
 		// book a ticket
 		int fd = open(AIRPLANE, O_RDWR);
@@ -707,13 +707,13 @@ int menu1(int sock, int id, int type)
 		write(sock, &op_id, sizeof(op_id));
 		return 1;
 	}
-	if (op_id == 2)
+	if (op_id == 3)
 	{
 		view_booking(sock, id, type);
 		write(sock, &op_id, sizeof(op_id));
 		return 2;
 	}
-	if (op_id == 3)
+	if (op_id == 4)
 	{
 		// update booking
 		view_booking(sock, id, type);
@@ -810,7 +810,7 @@ int menu1(int sock, int id, int type)
 			write(sock, &op_id, sizeof(op_id));
 		return 3;
 	}
-	if (op_id == 4)
+	if (op_id == 5)
 	{
 		// cancel booking
 		view_booking(sock, id, type);
@@ -860,7 +860,7 @@ int menu1(int sock, int id, int type)
 		write(sock, &op_id, sizeof(op_id));
 		return 4;
 	}
-	if (op_id == 5)
+	if (op_id == 1)
 	{
 		// searching information
 		int fd = open(AIRPLANE, O_RDWR);

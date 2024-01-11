@@ -579,7 +579,10 @@ int do_action(int sock, int opt)
 	{
 		write(sock, &opt, sizeof(opt));
 		view_booking(sock);
-		
+		printf("Enter you email: ");
+			char mail[50];
+			char command[200];
+			scanf("%s", mail);
 		int val;
 		printf("Enter the booking id to be deleted: ");
 		scanf("%d", &val);
