@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#define PORT 8888
+#define PORT 8080
 #define PASS_LENGTH 20
 
 int airplanesys(int sock);
@@ -16,7 +16,7 @@ void view_booking(int sock);
 int menu_search(int sock, int search_option);
 int main(int argc, char *argv[])
 {
-	char *ip = "172.29.222.246"; // default ip address if there is no parameter
+	char *ip = "172.24.120.204"; // default ip address if there is no parameter
 	if (argc == 2)
 	{
 		// if there are 2 parameters then the ip will be assigned

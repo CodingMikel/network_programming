@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#define PORT 8888
+#define PORT 8080
 #define AIRPLANE "./db/airplane"
 #define BOOKING "./db/booking"
 #define PASS_LENGTH 30
